@@ -44,7 +44,7 @@ namespace Gateway.API.Services
         public async Task<PaymentDetails> RetrievePaymentDetailsAsync(Guid id)
         {
             using var connection = _context.CreateConnection();
-            var result = await connection.QueryAsync<PaymentDetails>("RetrievePaymentById", new { Id = id }, commandType: CommandType.StoredProcedure);
+            var result = await connection.QueryAsync<PaymentDetails>("sp_RetrievePaymentById", new { Id = id }, commandType: CommandType.StoredProcedure);
             return result.SingleOrDefault();
         }
     }

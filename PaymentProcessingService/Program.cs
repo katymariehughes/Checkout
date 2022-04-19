@@ -19,13 +19,13 @@ hostBuilder.ConfigureServices((context, services) =>
     services.AddCap(x =>
     {
         x.DefaultGroupName = "paymentprocessingservice";
-        x.UseEntityFramework<ProcessorContext>();
+        x.UseEntityFramework<ProcessorContext>(opt => opt.Schema = "pro");
         x.UseSqlServer(config.GetConnectionString("Database"));
         x.UseRabbitMQ(config.GetValue<string>("RabbitMQ:Host"));
     }).AddSubscribeFilter<CapFilter>();
 });
 
-hostBuilder.AddLogging("Seq");
+hostBuilder.AddLogging("Seq", "PaymentProcessingService");
 
 IHost host = hostBuilder.Build();
 

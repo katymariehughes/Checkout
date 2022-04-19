@@ -33,7 +33,7 @@ builder.Services.AddCap(opt =>
     opt.UseRabbitMQ(config.GetValue<string>("RabbitMQ:Host"));
 }).AddSubscribeFilter<CapFilter>();
 
-builder.Host.AddLogging("Seq");
+builder.Host.AddLogging("Seq", "Gateway.API");
 
 var app = builder.Build();
 

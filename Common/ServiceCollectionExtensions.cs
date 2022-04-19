@@ -10,7 +10,7 @@ namespace Common
 {
     public static class ServiceCollectionExtensions
     {
-        public static void AddLogging(this IHostBuilder hostBuilder, string seqConnectionStringName)
+        public static void AddLogging(this IHostBuilder hostBuilder, string seqConnectionStringName, string applicationName)
         {
             hostBuilder.UseSerilog((ctx, config) =>
             {
@@ -20,6 +20,7 @@ namespace Common
                       .MinimumLevel.Override("Microsoft.EntityFrameworkCore", LogEventLevel.Warning)
                       .Enrich.WithMachineName()
                       .Enrich.WithSpan()
+                      .Enrich.WithProperty("Application", applicationName)
                       .Enrich.FromLogContext()
                       .WriteTo.Seq(ctx.Configuration.GetConnectionString(seqConnectionStringName))
                       .WriteTo.Console();
