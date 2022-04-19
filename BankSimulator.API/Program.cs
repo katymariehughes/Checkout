@@ -1,7 +1,10 @@
+using Common;
+
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+builder.Host.AddLogging("Seq");
 
 var app = builder.Build();
 
@@ -15,5 +18,6 @@ app.MapPost("/process", (ProcessPaymentRequest request) =>
     return ProcessPaymentResponse.Generate(request);
 })
 .WithName("ProcessPayment");
+
 
 app.Run();

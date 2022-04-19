@@ -17,7 +17,7 @@ namespace Common
                 config.MinimumLevel.Override("Microsoft", LogEventLevel.Information)
                       .MinimumLevel.Override("Microsoft.AspNetCore", LogEventLevel.Warning)
                       .MinimumLevel.Override("System", LogEventLevel.Warning)
-                    //  .MinimumLevel.Override("Microsoft.EntityFrameworkCore", LogEventLevel.Warning)
+                      .MinimumLevel.Override("Microsoft.EntityFrameworkCore", LogEventLevel.Warning)
                       .Enrich.WithMachineName()
                       .Enrich.WithSpan()
                       .Enrich.FromLogContext()

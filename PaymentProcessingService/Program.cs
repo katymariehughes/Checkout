@@ -18,6 +18,7 @@ hostBuilder.ConfigureServices((context, services) =>
     services.AddDbContext<ProcessorContext>(opt => opt.UseSqlServer(config.GetConnectionString("Database")));
     services.AddCap(x =>
     {
+        x.DefaultGroupName = "paymentprocessingservice";
         x.UseEntityFramework<ProcessorContext>();
         x.UseSqlServer(config.GetConnectionString("Database"));
         x.UseRabbitMQ(config.GetValue<string>("RabbitMQ:Host"));

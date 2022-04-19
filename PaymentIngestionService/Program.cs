@@ -19,6 +19,7 @@ hostBuilder.ConfigureServices((context, services) =>
     services.AddDbContext<IngestionContext>(opt => opt.UseSqlServer(config.GetConnectionString("Database")));
     services.AddCap(x =>
     {
+        x.DefaultGroupName = "paymentingestionservice";
         x.UseEntityFramework<IngestionContext>();
         x.UseSqlServer(config.GetConnectionString("Database"));
         x.UseRabbitMQ(config.GetValue<string>("RabbitMQ:Host"));

@@ -33,34 +33,34 @@ services:
         ports:
             - '5341:80'
 
-    banksim-api:
-      image: banksim-api
-      build:
-        context: .
-        dockerfile: banksim.Dockerfile
-      ports:
-        - '7209:80'
+    #banksim-api:
+    #  image: banksim-api
+    #  build:
+    #    context: .
+    #    dockerfile: banksim.Dockerfile
+    #  ports:
+    #    - '7209:80'
 
-    gateway-api:
-      image: gateway-api
-      build:
-        context: .
-        dockerfile: gateway.Dockerfile
+    #gateway-api:
+    #  image: gateway-api
+    #  build:
+    #    context: .
+    #    dockerfile: gateway.Dockerfile
 
-    ingestion-svc:
-      image: ingestion-svc
-      build:
-        context: .
-        dockerfile: ingestion.Dockerfile
+    #ingestion-svc:
+    #  image: ingestion-svc
+    #  build:
+    #    context: .
+    #    dockerfile: ingestion.Dockerfile
 
-    acquiring-svc:
-      image: acquiring-svc
-      build:
-        context: .
-        dockerfile: acquiring.Dockerfile
+    #acquiring-svc:
+    #  image: acquiring-svc
+    #  build:
+    #    context: .
+    #    dockerfile: acquiring.Dockerfile
 
-    processing-svc:
-      image: processing-svc
-      build:
-        context: .
-        dockerfile: processing.Dockerfile
+    #processing-svc:
+    #  image: processing-svc
+    #  build:
+    #    context: .
+    #    dockerfile: processing.Dockerfile

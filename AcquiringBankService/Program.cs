@@ -25,6 +25,7 @@ hostBuilder.ConfigureServices((context, services) =>
 
     services.AddCap(x =>
     {
+        x.DefaultGroupName = "acquiringbankservice";
         x.UseEntityFramework<AcquiringContext>();
         x.UseSqlServer(config.GetConnectionString("Database"));
         x.UseRabbitMQ(config.GetValue<string>("RabbitMQ:Host"));
