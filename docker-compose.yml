@@ -2,18 +2,27 @@ version: '3.4'
 
 services:
 
-    sqlserver:
-        container_name: sqlserver
-        image: mcr.microsoft.com/azure-sql-edge
-        environment:
-            - ACCEPT_EULA=1
-            - MSSQL_SA_PASSWORD=MyPass@word
-            - MSSQL_PID=Developer
-            - MSSQL_USER=SA
-        ports:
-            - '1433:1433'
-        volumes: 
-            - ./init:/docker-entrypoint-initdb.d
+    # sqlserver:
+    #     container_name: sqlserver
+    #     image: mcr.microsoft.com/azure-sql-edge
+    #     environment:
+    #         - ACCEPT_EULA=1
+    #         - MSSQL_SA_PASSWORD=MyPass@word
+    #         - MSSQL_PID=Developer
+    #         - MSSQL_USER=SA
+    #     ports:
+    #         - '1433:1433'
+    #     volumes: 
+    #         - ./init:/docker-entrypoint-initdb.d
+
+    database:
+      container_name: database
+      image: database
+      build:
+        context: .
+        dockerfile: db.Dockerfile
+      ports:
+        - '1433:1433'
 
     rabbitmq:
         container_name: rabbitmq
@@ -36,31 +45,33 @@ services:
             - '5341:80'
 
     banksim-api:
-    image: banksim-api
-    build:
-      context: .
-      dockerfile: BankSimulator.API/Dockerfile
+      image: banksim-api
+      build:
+        context: .
+        dockerfile: banksim.Dockerfile
+      ports:
+        - '7209:80'
 
     gateway-api:
-    image: gateway-api
-    build:
-      context: .
-      dockerfile: Gateway.API/Dockerfile
+      image: gateway-api
+      build:
+        context: .
+        dockerfile: Gateway.API/Dockerfile
 
     ingestion-svc:
-    image: ingestion-svc
-    build:
-      context: .
-      dockerfile: PaymentIngestionService/Dockerfile
+      image: ingestion-svc
+      build:
+        context: .
+        dockerfile: PaymentIngestionService/Dockerfile
 
     acquiring-svc:
-    image: acquiring-svc
-    build:
-      context: .
-      dockerfile: AcquiringBankService/Dockerfile
+      image: acquiring-svc
+      build:
+        context: .
+        dockerfile: AcquiringBankService/Dockerfile
 
     processing-svc:
-    image: processing-svc
-    build:
-      context: .
-      dockerfile: PaymentProcessingService/Dockerfile
+      image: processing-svc
+      build:
+        context: .
+        dockerfile: PaymentProcessingService/Dockerfile

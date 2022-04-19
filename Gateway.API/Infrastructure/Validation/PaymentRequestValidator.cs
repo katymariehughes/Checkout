@@ -6,7 +6,7 @@ namespace Gateway.API.Infrastructure.Validation
 {
     public class PaymentRequestValidator : AbstractValidator<PaymentRequest>
     {
-        public PaymentRequestValidator(IValidator<CardDetails?> cardDetailsValidator, IValidator<Amount?> amountValidator)
+        public PaymentRequestValidator(IValidator<CardDetails> cardDetailsValidator, IValidator<Amount> amountValidator)
         {
             RuleFor(x => x.CardDetails)
                 .NotNull()
@@ -17,9 +17,9 @@ namespace Gateway.API.Infrastructure.Validation
                .SetValidator(amountValidator);
         }
     }
-    public class CardDetailsValidator : AbstractValidator<CardDetails?>
+    public class CardDetailsValidator : AbstractValidator<CardDetails>
     {
-        public CardDetailsValidator(IValidator<ExpiryDate?> expiryDateValidator)
+        public CardDetailsValidator(IValidator<ExpiryDate> expiryDateValidator)
         {
             RuleFor(x => x.CardNumber)
                 .NotEmpty()
@@ -35,7 +35,7 @@ namespace Gateway.API.Infrastructure.Validation
         }
     }
 
-    public class ExpiryDateValidator : AbstractValidator<ExpiryDate?>
+    public class ExpiryDateValidator : AbstractValidator<ExpiryDate>
     {
         public ExpiryDateValidator(IDateTimeOracle dateTime)
         {
@@ -52,7 +52,7 @@ namespace Gateway.API.Infrastructure.Validation
         }
     }
 
-    public class AmountValidator : AbstractValidator<Amount?>
+    public class AmountValidator : AbstractValidator<Amount>
     {
         public AmountValidator()
         {
