@@ -30,12 +30,4 @@ hostBuilder.AddLogging("Seq");
 
 IHost host = hostBuilder.Build();
 
-//using (var scope = host.Services.CreateScope())
-//{
-//    var services = scope.ServiceProvider;
-
-//    var context = services.GetRequiredService<IngestionContext>();
-//    context.Database.Migrate();
-//}
-
 await host.RunAsync();

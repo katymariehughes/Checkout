@@ -23,10 +23,5 @@ namespace Common.Events
             var headers = context.DeliverMessage.Headers;
             _logger.LogInformation("{MessageType} [{MessageId}] handled", headers["cap-msg-type"], headers["message-id"]);
         }
-
-        public override void OnSubscribeException(ExceptionContext context)
-        {
-            // subscribe method execution exception
-        }
     }
 }

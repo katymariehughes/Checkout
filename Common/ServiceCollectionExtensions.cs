@@ -25,14 +25,5 @@ namespace Common
                       .WriteTo.Console();
             });
         }
-
-        public static void RegisterRabbitMqProducerConnection(this IServiceCollection services, string connectionString)
-        {
-            services.AddSingleton<IConnection>(new ConnectionFactory
-            {
-                Uri = new Uri(connectionString),
-                DispatchConsumersAsync = true
-            }.CreateConnection());
-        }
     }
 }

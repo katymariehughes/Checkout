@@ -2,7 +2,9 @@
 using AcquiringBankService.Models;
 using AutoMapper;
 using Flurl.Http;
+using Flurl.Http.Content;
 using Microsoft.AspNetCore.DataProtection;
+using System.Text;
 
 namespace AcquiringBankService.Services
 {
@@ -26,9 +28,14 @@ namespace AcquiringBankService.Services
             // bankRequest.CardNumber = _dataProtector.Unprotect(bankRequest.CardNumber);
             // bankRequest.CVV = _dataProtector.Unprotect(bankRequest.CVV);
 
-            var result = await _acquiringBankUrl.PostJsonAsync(request);
+            var json = FlurlHttp.GlobalSettings.JsonSerializer.Serialize(bankRequest);
+            var content = new CapturedJsonContent(json);
 
+            var result = await _acquiringBankUrl.PostAsync(content);
             return await result.GetJsonAsync<AcquiringBankResponse>();
+            //var result = await _acquiringBankUrl.PostJsonAsync(request);
+
+            //return await result.GetJsonAsync<AcquiringBankResponse>();
         }
     }
 }

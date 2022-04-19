@@ -2,7 +2,7 @@
 
 namespace PaymentIngestionService.Infrastructure.Events
 {
-    public class PaymentPersistedEvent : IEvent
+    public class PaymentPersistedEvent
     {
         public Guid PaymentId { get; set; }
 

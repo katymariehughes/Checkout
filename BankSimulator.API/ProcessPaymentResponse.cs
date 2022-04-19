@@ -32,7 +32,8 @@
                 CardType = Random("Credit", "Debit"),
                 Issuer = Random("HSBC", "Monzo", "Lloyds", "Starling"),
                 IssuerCountry = Random("GB", "US", "FR", "DA")
-            }
+            },
+            ProcessedOn = DateTime.UtcNow
         };
     }
 

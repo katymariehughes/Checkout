@@ -39,6 +39,33 @@ namespace PaymentIngestionService.Migrations
                 {
                     table.PrimaryKey("PK_Payments", x => x.Id);
                 });
+
+            migrationBuilder.Sql(@"
+            CREATE PROCEDURE dbo.sp_RetrievePaymentById @Id UNIQUEIDENTIFIER
+            AS
+             SELECT 
+                a.PaymentId,
+                p.Currency,
+                p.Amount,
+                a.Approved,
+                a.Status,
+                a.ResponseCode,
+                a.ResponseSummary,
+                a.Type,
+                a.Scheme,
+                p.ExpiryMonth,
+                p.ExpiryYear,
+                a.Last4,
+                a.Bin,
+                a.CardType,
+                a.Issuer,
+                a.IssuerCountry
+                FROM dbo.Payments p
+                JOIN dbo.Authorizations a
+                ON p.Id = a.PaymentId
+                WHERE p.Id = @Id
+            GO
+            ");
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)

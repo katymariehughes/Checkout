@@ -15,7 +15,7 @@ services:
 
     rabbitmq:
         container_name: rabbitmq
-        image: rabbitmq
+        image: rabbitmq:3-management
         hostname: 'rabbitmq'
         ports:
             - '4369:4369'
