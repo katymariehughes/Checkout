@@ -24,8 +24,8 @@ namespace PaymentIngestionService.Infrastructure.EntityFramework
 
             builder.OwnsOne(x => x.Amount, am =>
             {
-                am.Property(a => a.Currency).IsRequired();
-                am.Property(a => a.Value).IsRequired();
+                am.Property(a => a.Currency).HasColumnName("Currency").IsRequired();
+                am.Property(a => a.Value).HasColumnName("Amount").IsRequired();
             });
 
             builder.Property<DateTime>("CreatedOn").IsRequired().HasDefaultValueSql("getutcdate()").HasUtcConversion();

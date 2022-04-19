@@ -6,7 +6,7 @@ using System.Reflection;
 
 namespace PaymentIngestionService.Infrastructure.EntityFramework
 {
-    public class IngestionContext : DbContext, IDataProtectionKeyContext
+    public class IngestionContext : DbContext
     {
         public IngestionContext(DbContextOptions<IngestionContext> options) : base(options) { }
 
@@ -18,8 +18,6 @@ namespace PaymentIngestionService.Infrastructure.EntityFramework
         public DbSet<Payment> Payments { get; set; }
 
         public DbSet<IdempotencyToken> IdempotencyTokens { get; set; }
-
-        public DbSet<DataProtectionKey> DataProtectionKeys { get; set; }
 
         public async Task PersistIdemptencyToken(Guid messageId, string consumerName)
         {

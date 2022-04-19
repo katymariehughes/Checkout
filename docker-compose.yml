@@ -12,8 +12,10 @@ services:
             - MSSQL_USER=SA
         ports:
             - '1433:1433'
+        volumes: 
+            - ./init:/docker-entrypoint-initdb.d
 
-    rabbitmq: # login guest:guest
+    rabbitmq:
         container_name: rabbitmq
         image: rabbitmq
         hostname: 'rabbitmq'
@@ -25,16 +27,6 @@ services:
             - '15671:15671'
             - '15672:15672'
 
-    #redis:
-    #    container_name: redis
-    #    image: 'redis:alpine'
-
-    #redis-ui:
-    #    image: 'rediscommander/redis-commander:latest'
-    #    container_name: redis-ui
-    #    ports:
-    #        - '6379:6379'
-
     seq:
         container_name: seq
         image: datalust/seq
@@ -42,3 +34,33 @@ services:
             - ACCEPT_EULA=y
         ports:
             - '5341:80'
+
+    banksim-api:
+    image: banksim-api
+    build:
+      context: .
+      dockerfile: BankSimulator.API/Dockerfile
+
+    gateway-api:
+    image: gateway-api
+    build:
+      context: .
+      dockerfile: Gateway.API/Dockerfile
+
+    ingestion-svc:
+    image: ingestion-svc
+    build:
+      context: .
+      dockerfile: PaymentIngestionService/Dockerfile
+
+    acquiring-svc:
+    image: acquiring-svc
+    build:
+      context: .
+      dockerfile: AcquiringBankService/Dockerfile
+
+    processing-svc:
+    image: processing-svc
+    build:
+      context: .
+      dockerfile: PaymentProcessingService/Dockerfile
