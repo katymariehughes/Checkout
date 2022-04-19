@@ -3,9 +3,63 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.1.32319.34
 MinimumVisualStudioVersion = 10.0.40219.1
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{5127C037-D5A5-4049-9126-0F52211863CD}"
+	ProjectSection(SolutionItems) = preProject
+		README.md = README.md
+	EndProjectSection
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AcquiringBankService", "AcquiringBankService\AcquiringBankService.csproj", "{E289A942-07EA-4B90-83AB-135BFD8AFDBA}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BankSimulator.API", "BankSimulator.API\BankSimulator.API.csproj", "{93248541-42BE-4556-B7D3-005791F7DCF9}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Common", "Common\Common.csproj", "{73914D76-26D1-49AC-B529-662468DCBE74}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Gateway.API", "Gateway.API\Gateway.API.csproj", "{D37AA697-C981-4DC7-A369-B43B9682C7BD}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PaymentIngestionService", "PaymentIngestionService\PaymentIngestionService.csproj", "{0E9AA28A-32A1-43BD-B99D-5E44CE0B5375}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PaymentProcessingService", "PaymentProcessingService\PaymentProcessingService.csproj", "{C9E39206-918E-4623-AFE2-29868203BC25}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Services", "Services", "{AE6519F3-281A-4A1D-A312-51F303D549BB}"
+EndProject
 Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{E289A942-07EA-4B90-83AB-135BFD8AFDBA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E289A942-07EA-4B90-83AB-135BFD8AFDBA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E289A942-07EA-4B90-83AB-135BFD8AFDBA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E289A942-07EA-4B90-83AB-135BFD8AFDBA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{93248541-42BE-4556-B7D3-005791F7DCF9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{93248541-42BE-4556-B7D3-005791F7DCF9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{93248541-42BE-4556-B7D3-005791F7DCF9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{93248541-42BE-4556-B7D3-005791F7DCF9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{73914D76-26D1-49AC-B529-662468DCBE74}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{73914D76-26D1-49AC-B529-662468DCBE74}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{73914D76-26D1-49AC-B529-662468DCBE74}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{73914D76-26D1-49AC-B529-662468DCBE74}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D37AA697-C981-4DC7-A369-B43B9682C7BD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D37AA697-C981-4DC7-A369-B43B9682C7BD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D37AA697-C981-4DC7-A369-B43B9682C7BD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D37AA697-C981-4DC7-A369-B43B9682C7BD}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0E9AA28A-32A1-43BD-B99D-5E44CE0B5375}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0E9AA28A-32A1-43BD-B99D-5E44CE0B5375}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0E9AA28A-32A1-43BD-B99D-5E44CE0B5375}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0E9AA28A-32A1-43BD-B99D-5E44CE0B5375}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C9E39206-918E-4623-AFE2-29868203BC25}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C9E39206-918E-4623-AFE2-29868203BC25}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C9E39206-918E-4623-AFE2-29868203BC25}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C9E39206-918E-4623-AFE2-29868203BC25}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{E289A942-07EA-4B90-83AB-135BFD8AFDBA} = {AE6519F3-281A-4A1D-A312-51F303D549BB}
+		{0E9AA28A-32A1-43BD-B99D-5E44CE0B5375} = {AE6519F3-281A-4A1D-A312-51F303D549BB}
+		{C9E39206-918E-4623-AFE2-29868203BC25} = {AE6519F3-281A-4A1D-A312-51F303D549BB}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {4DC2BBBF-DCCD-4714-901F-271D2D15AAE5}

@@ -1,0 +1,32 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.Worker">
+
+	<PropertyGroup>
+		<TargetFramework>net6.0</TargetFramework>
+		<ImplicitUsings>enable</ImplicitUsings>
+		<UserSecretsId>dotnet-AcquiringBankService-C8F2492F-69DC-4731-AC8D-ED5C8EDBFB62</UserSecretsId>
+		<DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<PackageReference Include="AutoMapper" Version="11.0.1" />
+		<PackageReference Include="AutoMapper.Extensions.Microsoft.DependencyInjection" Version="11.0.0" />
+		<PackageReference Include="Flurl.Http" Version="3.2.2" />
+		<PackageReference Include="Microsoft.AspNetCore.DataProtection.EntityFrameworkCore" Version="6.0.4" />
+		<PackageReference Include="Microsoft.Extensions.Hosting" Version="6.0.1" />
+		<PackageReference Include="Polly" Version="7.2.3" />
+		<PackageReference Include="RabbitMQ.Client" Version="6.2.4" />
+		<PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="6.0.4" />
+		<PackageReference Include="DotNetCore.CAP" Version="6.0.1" />
+		<PackageReference Include="DotNetCore.CAP.SqlServer" Version="6.0.1" />
+		<PackageReference Include="DotNetCore.CAP.RabbitMQ" Version="6.0.1" />
+		<PackageReference Include="DotNetCore.CAP.Dashboard" Version="6.0.1" />
+		<PackageReference Include="Serilog.AspNetCore" Version="5.0.0" />
+		<PackageReference Include="Serilog.Enrichers.Environment" Version="2.2.0" />
+		<PackageReference Include="Serilog.Enrichers.Span" Version="2.3.0" />
+		<PackageReference Include="Serilog.Sinks.Seq" Version="5.1.1" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<ProjectReference Include="..\Common\Common.csproj" />
+	</ItemGroup>
+</Project>
