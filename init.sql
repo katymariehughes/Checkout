@@ -1,4 +1,17 @@
-﻿CREATE DATABASE checkout
+﻿CREATE DATABASE checkout;
+go
+
+USE checkout;
+go
+
+CREATE LOGIN checkout_login WITH PASSWORD='MyPass@word', DEFAULT_DATABASE=checkout;
+go
+
+CREATE USER checkout FOR LOGIN checkout_login WITH DEFAULT_SCHEMA=dbo;
+go
+
+ALTER ROLE db_owner ADD MEMBER checkout;
+go
 
 CREATE TABLE [dbo].[Payments](
 	[Id] [uniqueidentifier] NOT NULL,
