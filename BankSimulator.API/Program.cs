@@ -4,7 +4,7 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
-builder.Host.AddLogging("Seq");
+builder.Host.AddLogging("Seq", "BankSimulator.API");
 
 var app = builder.Build();
 
@@ -13,11 +13,10 @@ app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "BankSimulat
 
 app.UseHttpsRedirection();
 
-app.MapPost("/process", (ProcessPaymentRequest request) =>
+app.MapPost("/api/v1/process", (ProcessPaymentRequest request) =>
 {
     return ProcessPaymentResponse.Generate(request);
 })
 .WithName("ProcessPayment");
-
 
 app.Run();

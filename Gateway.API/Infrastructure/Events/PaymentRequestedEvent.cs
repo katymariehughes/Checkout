@@ -3,7 +3,7 @@ using Gateway.API.Models;
 
 namespace Gateway.API.Infrastructure.Events
 {
-    public class PaymentRequestedEvent : IEvent
+    public class PaymentRequestedEvent
     {
         public CardDetails CardDetails { get; init; }
 

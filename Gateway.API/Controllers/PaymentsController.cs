@@ -8,6 +8,7 @@ using System.Net;
 namespace Gateway.API.Controllers
 {
     [ApiController]
+    [Route("api/v1")]
     public class PaymentsController : ControllerBase
     {
         private readonly ILogger<PaymentsController> _logger;

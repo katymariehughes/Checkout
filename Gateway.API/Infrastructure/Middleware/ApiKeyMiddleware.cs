@@ -13,6 +13,7 @@ namespace Gateway.API.Infrastructure.Middleware
             _next = next;
             _configuration = configuration;
         }
+
         public async Task InvokeAsync(HttpContext context)
         {
             if (!context.Request.Headers.TryGetValue(HeaderName, out var extractedApiKey))

@@ -20,22 +20,14 @@ hostBuilder.ConfigureServices((context, services) =>
     services.AddCap(x =>
     {
         x.DefaultGroupName = "paymentingestionservice";
-        x.UseEntityFramework<IngestionContext>();
+        x.UseEntityFramework<IngestionContext>(opt => opt.Schema = "ing");
         x.UseSqlServer(config.GetConnectionString("Database"));
         x.UseRabbitMQ(config.GetValue<string>("RabbitMQ:Host"));
     }).AddSubscribeFilter<CapFilter>();
 });
 
-hostBuilder.AddLogging("Seq");
+hostBuilder.AddLogging("Seq", "PaymentIngestionService");
 
 IHost host = hostBuilder.Build();
-
-//using (var scope = host.Services.CreateScope())
-//{
-//    var services = scope.ServiceProvider;
-
-//    var context = services.GetRequiredService<IngestionContext>();
-//    context.Database.Migrate();
-//}
 
 await host.RunAsync();

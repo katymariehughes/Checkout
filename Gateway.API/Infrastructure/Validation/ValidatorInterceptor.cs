@@ -12,6 +12,8 @@ namespace Gateway.API.Infrastructure.Validation
         {
             if (!result.IsValid)
             {
+                // Throwing this so that the error handling middleware can take care of it and produce a consistent response rather than 
+                // the fluent validation middleware butting in and returning its own version of a 400 Bad Request response
                 throw new RequestValidationException(result.Errors.Select(e => e.ErrorMessage));
             }
 

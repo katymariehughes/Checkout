@@ -2,7 +2,7 @@
 
 namespace AcquiringBankService.Infrastructure.Events
 {
-    public class AcquirerResponseEvent : IEvent
+    public class AcquirerResponseEvent
     {
         public Guid ResponseId { get; init; }
         public int Amount { get; init; }

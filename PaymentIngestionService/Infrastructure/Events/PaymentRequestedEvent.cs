@@ -2,7 +2,7 @@
 
 namespace PaymentIngestionService.Infrastructure.Events
 {
-    public class PaymentRequestedEvent : IEvent
+    public class PaymentRequestedEvent
     {
         public CardDetails CardDetails { get; init; }
 

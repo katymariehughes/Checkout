@@ -6,6 +6,7 @@ using Gateway.API.Infrastructure.Dapper;
 using Gateway.API.Infrastructure.Events;
 using Gateway.API.Models;
 using Microsoft.AspNetCore.DataProtection;
+using System.Data;
 
 namespace Gateway.API.Services
 {
@@ -42,33 +43,9 @@ namespace Gateway.API.Services
 
         public async Task<PaymentDetails> RetrievePaymentDetailsAsync(Guid id)
         {
-            var query =
-            @"
-            SELECT 
-            a.PaymentId,
-            p.Currency,
-            p.Amount
-            a.Approved,
-            a.Status,
-            a.ResponseCode,
-            a.ResponseSummary,
-            a.Type,
-            a.Scheme,
-            p.ExpiryMonth,
-            p.ExpiryYear,
-            a.Last4,
-            a.Binm
-            a.CardType,
-            a.Issuer,
-            a.IssuerCountry
-            FROM Payments p
-            JOIN Authorizations a
-            ON p.Id = a.PaymentId
-            WHERE p.Id = @Id
-            ";
-
             using var connection = _context.CreateConnection();
-            return await connection.QuerySingleOrDefaultAsync<PaymentDetails>(query, new { id });
+            var result = await connection.QueryAsync<PaymentDetails>("sp_RetrievePaymentById", new { Id = id }, commandType: CommandType.StoredProcedure);
+            return result.SingleOrDefault();
         }
     }
 }

@@ -2,13 +2,13 @@
 {
     public string CardNumber { get; set; }
 
-    public int ExpiryMonth { get; init; }
+    public int ExpiryMonth { get; set; }
 
-    public int ExpiryYear { get; init; }
+    public int ExpiryYear { get; set; }
 
     public string CVV { get; set; }
 
-    public string Currency { get; init; }
+    public string Currency { get; set; }
 
-    public int Amount { get; init; }
+    public int Amount { get; set; }
 }

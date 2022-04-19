@@ -1,5 +1,4 @@
 ﻿using Common.Database;
-using Microsoft.AspNetCore.DataProtection.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using PaymentIngestionService.Domain;
 using System.Reflection;

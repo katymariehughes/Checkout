@@ -26,12 +26,12 @@ hostBuilder.ConfigureServices((context, services) =>
     services.AddCap(x =>
     {
         x.DefaultGroupName = "acquiringbankservice";
-        x.UseEntityFramework<AcquiringContext>();
+        x.UseEntityFramework<AcquiringContext>(opt => opt.Schema = "acq");
         x.UseSqlServer(config.GetConnectionString("Database"));
         x.UseRabbitMQ(config.GetValue<string>("RabbitMQ:Host"));
     }).AddSubscribeFilter<CapFilter>();
 });
 
-hostBuilder.AddLogging("Seq");
+hostBuilder.AddLogging("Seq", "AcquiringBankService");
 
 await hostBuilder.Build().RunAsync();
