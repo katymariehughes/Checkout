@@ -17,9 +17,5 @@
 		<PackageReference Include="Serilog.Enrichers.Span" Version="2.3.0" />
 		<PackageReference Include="Serilog.Sinks.Seq" Version="5.1.1" />
 	</ItemGroup>
-
-	<ItemGroup>
-	  <ProjectReference Include="..\BankSimulator.API\BankSimulator.API.csproj" />
-	</ItemGroup>
-
+	
 </Project>

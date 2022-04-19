@@ -6,7 +6,6 @@ using AcquiringBankService.Services;
 using Common;
 using Common.Events;
 using Flurl.Http;
-using Microsoft.AspNetCore.DataProtection;
 using Microsoft.EntityFrameworkCore;
 using System.Reflection;
 
@@ -19,7 +18,7 @@ hostBuilder.ConfigureServices((context, services) =>
     services.AddTransient<AcquiringBankWorker>();
     services.AddScoped<CapFilter>();
     services.AddAutoMapper(Assembly.GetAssembly(typeof(MappingProfile)));
-    services.AddDataProtection().PersistKeysToFileSystem(new DirectoryInfo(@"c:\temp-keys\"));//.PersistKeysToDbContext<AcquiringContext>();
+    services.AddDataProtection();
     services.AddDbContext<AcquiringContext>(opt => opt.UseSqlServer(config.GetConnectionString("Database")));
     services.AddScoped<IAcquiringService, AcquiringService>();
     FlurlHttp.Configure(settings => settings.HttpClientFactory = new PollyHttpClientFactory());

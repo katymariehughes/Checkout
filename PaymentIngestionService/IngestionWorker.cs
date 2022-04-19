@@ -33,17 +33,19 @@ namespace PaymentIngestionService
             var mapper = scope.ServiceProvider.GetRequiredService<IMapper>();
             var capPublisher = scope.ServiceProvider.GetRequiredService<ICapPublisher>();
 
-            using var txn = context.Database.BeginTransaction(capPublisher);
-            var entity = mapper.Map<Payment>(requestedPayment);
-            entity.Id = correlationId;
+            using (var txn = context.Database.BeginTransaction(capPublisher))
+            {
+                var entity = mapper.Map<Payment>(requestedPayment);
+                entity.Id = correlationId;
 
-            context.Add(entity);
-            await context.SaveChangesAsync();
-            await context.PersistIdemptencyToken(messageId, nameof(IngestionWorker));
+                context.Add(entity);
+                await context.SaveChangesAsync();
+                await context.PersistIdemptencyToken(messageId, nameof(IngestionWorker));
 
-            capPublisher.Publish(ProducingQueue, mapper.Map<PaymentPersistedEvent>(entity), correlationId);
+                capPublisher.Publish(ProducingQueue, mapper.Map<PaymentPersistedEvent>(entity), correlationId);
 
-            await txn.CommitAsync();
+                await txn.CommitAsync();
+            }
         }
     }
 }

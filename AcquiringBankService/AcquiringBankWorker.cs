@@ -33,14 +33,17 @@ namespace AcquiringBankService
             var mapper = scope.ServiceProvider.GetRequiredService<IMapper>();
             var capPublisher = scope.ServiceProvider.GetRequiredService<ICapPublisher>();
             var acquiringBankService = scope.ServiceProvider.GetRequiredService<IAcquiringService>();
+
             var response = await acquiringBankService.Process(requestedPayment);
 
-            using var txn = context.Database.BeginTransaction(capPublisher);
-            await context.PersistIdemptencyToken(messageId, nameof(AcquiringBankWorker));
+            using (var txn = context.Database.BeginTransaction(capPublisher))
+            {
+                await context.PersistIdemptencyToken(messageId, nameof(AcquiringBankWorker));
 
-            capPublisher.Publish(ProducingQueue, mapper.Map<AcquirerResponseEvent>(response), correlationId);
+                capPublisher.Publish(ProducingQueue, mapper.Map<AcquirerResponseEvent>(response), correlationId);
 
-            await txn.CommitAsync();
+                await txn.CommitAsync();
+            }
         }
     }
 }

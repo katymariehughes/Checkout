@@ -33,18 +33,20 @@ namespace PaymentProcessingService
             var mapper = scope.ServiceProvider.GetRequiredService<IMapper>();
             var capPublisher = scope.ServiceProvider.GetRequiredService<ICapPublisher>();
 
-            using var txn = context.Database.BeginTransaction(capPublisher);
-            var entity = mapper.Map<Authorization>(acquirerResponse);
-            entity.Id = Guid.NewGuid();
-            entity.PaymentId = correlationId;
+            using (var txn = context.Database.BeginTransaction(capPublisher))
+            {
+                var entity = mapper.Map<Authorization>(acquirerResponse);
+                entity.Id = Guid.NewGuid();
+                entity.PaymentId = correlationId;
 
-            context.Add(entity);
-            await context.SaveChangesAsync();
-            await context.PersistIdemptencyToken(messageId, nameof(ProcessingWorker));
+                context.Add(entity);
+                await context.SaveChangesAsync();
+                await context.PersistIdemptencyToken(messageId, nameof(ProcessingWorker));
 
-            capPublisher.Publish(ProducingQueue, new PaymentProcessedEvent { IsApproved = acquirerResponse.Approved }, correlationId);
+                capPublisher.Publish(ProducingQueue, new PaymentProcessedEvent { IsApproved = acquirerResponse.Approved }, correlationId);
 
-            await txn.CommitAsync();
+                await txn.CommitAsync();
+            }
         }
     }
 }
