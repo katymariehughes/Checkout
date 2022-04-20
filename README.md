@@ -1,1 +1,165 @@
-Checkout
+## Project structure
+
+- Gateway.API
+- PaymentIngestionService
+- AcquiringBankService
+- BankSimulator.API
+- PaymentProcessingService
+---
+
+## To Build the Solution
+
+Navigate to the root folder, i.e. the folder with Checkout.sln in it:
+
+**`docker-compose -f "docker-compose.yml" up -d --build`**
+
+Then in the package manager console of Visual Studio:
+
+**`dotnet ef database update --project PaymentIngestionService`**
+
+**`dotnet ef database update --project PaymentProcessingService`**
+
+Docker setup of the .NET applications was not reliable enough on my M1 Mac, so you'll need to set multiple startup projects in Visual Studio and run from there:
+
+![Startup](startup.png)
+
+Ctrl + F5 to run all the services
+
+---
+
+### Links
+
+[Seq logging](http://localhost:5341)
+
+[RabbitMQ admin console](http://localhost:15672)
+
+[BankSimulator.API Swagger UI](https://localhost:7209/swagger/index.html)
+
+[Gateway.API Swagger UI](https://localhost:7099/swagger/index.html)
+
+
+
+![Architecture](architecture.png)
+
+
+Assumptions
+
+The POST endpoint need not provide the full response of the Processed payment.
+
+The get endpoint  serves as a status monitor. Only when the payment has been processed will the payment details reflect the full response.
+
+The bank simulator need only return mocked responses, and does not need to validate incoming requests or return accurate data like card schemes or bin numbers corresponding to the inputted card number.
+
+Since the processing of payments requires a number of parties and steps, I have decided to leverage an event driven architecture. The Process endpoint merely publishes a message to kick off the backend flow. The response will just provide the payment ID, a status to say ‘Processing’, and in the location header, a URL which points tot he retrieval endpoint.
+
+POST - 
+
+The amount will be in pennies or whatever the lowest denomination is for a currency, since we don’t want to rely on decimal serialization / rounding errors. There is no validation on the currency yet, but there’d be a cached list of supported currencies in a production setting.
+
+Gateway API
+
+```bash
+curl -X 'POST' \
+  'https://localhost:7099/payments' \
+  -H 'accept: text/plain' \
+  -H 'X-API-KEY: pgH7QzFHJx4w46fI5Uzi4RvtTwlEXp' \
+  -H 'Content-Type: application/json' \
+  -d '{
+  "cardDetails": {
+    "cardNumber": "5105105105105100",
+    "expiryDate": {
+      "month": 4,
+      "year": 2025
+    },
+    "cvv": "123"
+  },
+  "amount": {
+    "currency": "GBP",
+    "value": 10000
+  }
+}'
+```
+
+```bash
+{
+  "id": "57272fc8-a466-480d-9a2c-ddff32b0f4d0",
+  "status": "Processing"
+}
+```
+
+Bank Simulator API
+
+[https://localhost:7209/swagger/index.html](https://localhost:7209/swagger/index.html)
+
+```bash
+curl -X 'POST' \
+  'https://localhost:7209/process' \
+  -H 'accept: application/json' \
+  -H 'Content-Type: application/json' \
+  -d '{
+  "cardNumber": "4111111111111111",
+  "expiryMonth": 6,
+  "expiryYear": 2023,
+  "cvv": "123",
+  "currency": "USD",
+  "amount": 1000
+}'
+```
+
+```json
+{
+  "responseId": "0255227f-1dfc-4d7c-b8ef-0fe49c711b02",
+  "amount": 1000,
+  "currency": "USD",
+  "approved": true,
+  "status": "Pending",
+  "responseCode": "45543",
+  "responseSummary": "Authorized",
+  "source": {
+    "type": "Card",
+    "expiryMonth": 6,
+    "expiryYear": 2023,
+    "scheme": "Mastercard",
+    "last4": "1111",
+    "bin": "424242",
+    "cardType": "Debit",
+    "issuer": "HSBC",
+    "issuerCountry": "DA"
+  },
+  "processedOn": "2022-04-19T21:18:59.953538Z"
+}
+```
+
+From there the client can poll 
+
+The rule of thumb is to not combine database and network calls, and so to achieve this, I have separated persistence to the database and calls to the external acquiring bank API by using message queues and separate micro service processes 
+
+A problem we run into when using event based solutions is that while we can achieve atomicity by using database traction transactions, we can’t then publish a message to a message queue outside of that. If we do if we choose to do that then it might be the case that a server outage or other unexpected error could make it so that something has persisted to the database but we never broadcast the event saying that we did. If we choose to publish the event before the database transaction then we might be broadcasting an event that never happened because for example the database connection was severed.
+
+ To solve this I have used an open source project called CAP. It uses the transaction outbox pattern to wrap message publishing into the database transaction. It saves the message to a database table and an external process picks that up and publishes it to the message queue. By using this we can achieve at least once delivery. 
+
+The correlation ID set on the messages is the payment ID, so that we can stitch together how things rippled through the system.
+
+This external process that picks up the messages could lead to multiple deliveries of the same message. To counteract this I have used a database table called identity tokens. Just before a database transaction wraps up, it adds an entry to this token table which includes the message ID and consumer name. The primary key of this table is a composite key of both of these columns which will intern have a unique index applied to it. The reason we want uniqueness in tandem with the consumer name is because we don’t want to prevent future consumers from subscribing to a topic in the message bus.
+
+The cap Library has been very easy to set up and integrate with both the database and message broker, but the way it works is not that intuitive. For example the first publisher is ostensibly publishing a message to a queue called “payments.requested”. I assumed that would correspond to the rabbit MQ routing key, but when you look at the rabbit MK admin console, it has actually created a queue under the name of the consuming service that is subscribed to “payments.requested”. Also, it expects certain message headers which may not be that easily applied if a message is coming from a non-CAP producer. I also don’t love that subscribing methods need to do so via attribute routing. There is an option to configure your own service type of discovery but the documentation doesn’t elaborate on how to do so.
+
+If I were to Utilise the transaction outbox Pattern in a Production solution I might opt to roll our own outbox processing solution, rather than Relying on a third-party one one which is not that extensible. Another option would be to use document storage like Azure CosmosDB which has a change feed that can be subscribed to, and events can be read that way. 
+
+Since credit card information is considered sensitive data, I have utilised the Microsoft data protection API to protect the card number and CVV. It is possible in theory for separate processes to share the same data protection keys to enable one service to encrypt data and another service to decrypt it, But I couldn’t get it working in time. The code that protects and unprotects is commented out for now.
+
+I have used entity framework core as the ORM in this project, although I would not choose to use it in production code. It allows for ease of prototyping for a proof of concept like this but it is not performant at scale and using data migrations are not always conducive to a good development experience, especially within a team. 
+
+If I were to productionise this solution, I would likely choose Apache Kafka as my message broker due to its ability to scale at enterprise level. I have much experience with Azure Service Bus but in the absence of a docker image, I chose RabbitMQ. The mechanisms of message routing and consumption differ greatly between rabbitmq and Kafka so the solution would need to change to accomodate that. 
+
+For the payment details retrieval endpoint it could be useful to add a caching layer which would be right through but if the endpoint is just to be used in a polling fashion i e when the payment is actually being initiated then it might not make sense
+
+At the moment it calls a stored procedure via Dapper to retrieve it from the database. The stored procedure aggregates the Payments and Authorizations tables together. In a production scenario, this data might not be in the same logical space, either geographically or topographically, or at least not in the same database schema, since we’d aim to have the separation of bounded contexts. Another microservice for aggregating the data might need to be implemented. For now the SP is fine and at least will be a little more optimised than a straight query.
+
+The authentication is very crude at the moment. It checks for the presence of an x-api-key header in the request and then checks to see if the key is present in appsettings.json. In reality we’d utilise something like Azure API Management. It serves as an API gateway to route, load balance and rate limit requests, as well as handling the verification of API keys
+
+For validation on the Gateway API, FluentValidation has been used as I’ve used it extensively and it’s always been flexible and reliable enough, and most importantly, easy to unit test against.
+
+Logging is done via the Serilog framework, and uses the Seq sink to provide us with a UI where we can query the logs generated from the applications.
+
+In the solution is a Common class library with a handful of extension methods and things relating to DI and the CAP library. In production we’d create a Nuget package since it’s unlikely the services would all be kept in a monorepo such as the one I’ve created.
