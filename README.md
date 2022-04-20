@@ -80,7 +80,7 @@ A problem we run into when building event driven solutions is that while we can 
   
 To solve this I've used an open source project called [CAP](https://github.com/dotnetcore/CAP). It uses the transaction outbox pattern to wrap message publishing into the database transaction. It saves the message to a database table and an external process picks that up and publishes it to the message queue. By utilising this, we can achieve at least once delivery. 
 
-This external process that picks up the messages could lead to multiple deliveries of the same message. To counteract this I have created a database table called `IdempotencyTokens`. Just before a database transaction is committed, it adds an entry to this token table which includes the message ID and consumer name. The primary key of this table is a composite key of both of these columns which will in turn have a unique index applied to it. The reason we want uniqueness in tandem with the consumer name is because we don’t want to prevent future consumers from subscribing to a topic in the message bus. The RabbitMQ exchange type used in this project is direct, but we don't want to prevent topic / fan-out subscriptions.
+This external process that picks up the messages could end up performing multiple deliveries of the same message. To counteract this I have created a database table called `IdempotencyTokens`. Just before a database transaction is committed, it adds an entry to this token table which includes the message ID and consumer name. The primary key of this table is a composite key of both of these columns which will in turn have a unique index applied to it. The reason we want uniqueness in tandem with the consumer name is because we don’t want to prevent future consumers from subscribing to a topic in the message bus. The RabbitMQ exchange type used in this project is direct, but we don't want to prevent topic / fan-out subscriptions.
 
 The correlation ID set on the messages is the payment ID, so that we can stitch together how things rippled through the system if needed.
 
@@ -103,29 +103,49 @@ I have used EntityFrameworkCore as the ORM in this project, although I would not
 
 # Production scenario
 
-If I were to productionise this solution, I would likely choose Apache Kafka as my message broker due to its ability to scale at enterprise level. I have much experience with Azure Service Bus but in the absence of a docker image, I chose RabbitMQ. The mechanisms of message routing and consumption differ greatly between rabbitmq and Kafka so the solution would need to change to accomodate that. We'd need to look at implementing dead letter queues and distinguish between transient errors and actual poison pill messages, such as malformed / invalid ones. These could never succeed despite retrying, so a DLQ with some monitoring / alerting attached, could prompt a human to take a look.
+### Performance
 
-For the payment details retrieval endpoint it could be useful to add a caching layer which would be write-through. However, if the endpoint is just to be used in a polling fashion i.e. when the payment is actually being initiated then it might not make sense to do this.
+If I were to productionise this solution, I would likely choose Apache Kafka as my message broker due to its ability to scale at enterprise level. I have much experience with Azure Service Bus but in the absence of a docker image, I chose RabbitMQ. The mechanisms of message routing and consumption differ greatly between RabbitMQ and Kafka so the solution would need to change to accomodate that. We'd need to look at implementing dead letter queues and distinguish between transient errors and actual poison pill messages, such as malformed / invalid ones. These could never succeed despite retrying, so a DLQ with some monitoring / alerting attached, could prompt a human to take a look.
 
-At the moment it calls a stored procedure via Dapper to retrieve it from the database. The stored procedure aggregates the Payments and Authorizations tables together. In a production scenario, this data might not be in the same logical space, either geographically or topographically, or at least not in the same database schema, since we’d aim to have the separation of bounded contexts. Another microservice for aggregating the data might need to be implemented. For now the SP is fine and at least will be a little more optimised than a straight query.
+For the payment details retrieval endpoint it could be useful to add a caching layer which would be write-through. Currently, if you try to call the GET endpoint immediately after the POST, you'd get a NotFound result which obviously doesn't represent the truth. Fortunately the requests perform well, but when deployed it could cause a problem, and unhappy paths would need to be extensively tested.
 
-The authentication is very crude at the moment. It checks for the presence of an x-api-key header in the request and then checks to see if the key is present in appsettings.json. In reality we’d utilise something like Azure API Management. It serves as an API gateway to route, load balance and rate limit requests, as well as handling the verification of API keys
+The process result returns in ~15ms and the backend flow is complete in ~200ms
+
+![Process](process-logs.png)
+
+Retrieving responds in ~6ms
+
+![Retrieve](retrieve-logs.png)
+
+
+At the moment, retrieval calls a stored procedure via Dapper to get info from the database. The stored procedure aggregates the Payments and Authorizations tables together. In a production scenario, this data might not be in the same logical space, either geographically or topographically, or at least not in the same database schema, since we’d aim to have the separation of bounded contexts. Another microservice for aggregating the data might need to be implemented. For now the SP is fine and at least will be a little more optimised than a straight query.
+
+### Authentication
+The authentication is very crude at the moment. It checks for the presence of an `X-API-KEY` header in the request and then looks for a corresponding key in appsettings.json. In reality we’d utilise something like Azure API Management. It serves as an API gateway to route, load balance and rate limit requests, as well as handling the verification of API keys.
+
+### Validation
 
 For validation on the Gateway API, FluentValidation has been used as I’ve used it extensively and it’s always been flexible and reliable enough, and most importantly, easy to unit test against.
 
-Logging is done via the Serilog framework, and uses the Seq sink to provide us with a UI where we can query the logs generated from the applications.
+The payment request amount is an integer to represent pennies or whatever the lowest denomination is for a currency, since we don’t want to rely on decimal serialization / rounding errors. There is no validation on the currency yet, but there’d be a cached list of supported currencies in a production setting, perhaps with feature toggles on them to suspend if needed.
+
+### Logging
+
+Logging is done via the Serilog framework, and uses the Seq sink to provide us with a UI where we can query the logs generated from the applications. In production I'd use the ELK stack with Kibana and Grafana for dashboards and alerts.
+
+### VS solution
 
 In the solution is a Common class library with a handful of extension methods and things relating to DI and the CAP library. In production we’d create a Nuget package since it’s unlikely the services would all be kept in a monorepo such as the one I’ve created.
 
+### Database scaling
+
+While we could vertically scale the DB, there is a physical limit to doing so. Horizontal scaling with read replicas would be an option, or partitioning. Choosing a partition key is not always easy to do, but using the Merchant ID would make sense here. Since you wouldn't be able to perform joins on partitioned tables, it would be good to implement an AnalyticsService with a fan-out messaging system, so that it could pump information to say a data lake, where BI could be gleaned from that rather than querying the actual DB and possibly affecting performance for customers.
 
 
-
-POST - 
-
-The amount will be in pennies or whatever the lowest denomination is for a currency, since we don’t want to rely on decimal serialization / rounding errors. There is no validation on the currency yet, but there’d be a cached list of supported currencies in a production setting.
-
+# Requests and Responses
 Gateway API
 
+POST Request
 ```bash
 curl -X 'POST' \
   'https://localhost:7099/payments' \
@@ -147,6 +167,7 @@ curl -X 'POST' \
   }
 }'
 ```
+Response
 
 ```bash
 {
@@ -154,10 +175,11 @@ curl -X 'POST' \
   "status": "Processing"
 }
 ```
+---
 
 Bank Simulator API
 
-[https://localhost:7209/swagger/index.html](https://localhost:7209/swagger/index.html)
+Request
 
 ```bash
 curl -X 'POST' \
@@ -173,6 +195,8 @@ curl -X 'POST' \
   "amount": 1000
 }'
 ```
+
+Response
 
 ```json
 {
