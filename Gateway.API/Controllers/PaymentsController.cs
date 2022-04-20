@@ -26,7 +26,9 @@ namespace Gateway.API.Controllers
         [ProducesResponseType(typeof(ValidationProblemDetails), (int)HttpStatusCode.BadRequest)]
         public IActionResult ProcessPayment(PaymentRequest request)
         {
-            var paymentId = _paymentsService.InitiatePaymentFlow(request);
+            Request.HttpContext.Items.TryGetValue("MerchantId", out var merchantIdValue);
+
+            var paymentId = _paymentsService.InitiatePaymentFlow(request, Guid.Parse(merchantIdValue.ToString()));
 
             return CreatedAtAction(nameof(RetrievePaymentDetails), new { id = paymentId }, new PaymentResponse
             {

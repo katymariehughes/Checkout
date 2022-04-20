@@ -27,7 +27,7 @@ namespace Gateway.API.Services
             _context = context;
         }
 
-        public Guid InitiatePaymentFlow(PaymentRequest request)
+        public Guid InitiatePaymentFlow(PaymentRequest request, Guid merchantId)
         {
             _logger.LogInformation("Initiating payment flow");
 
@@ -36,7 +36,10 @@ namespace Gateway.API.Services
 
             var paymentId = Guid.NewGuid();
 
-            _publisher.Publish("payments.requested", _mapper.Map<PaymentRequestedEvent>(request), paymentId);
+            var message = _mapper.Map<PaymentRequestedEvent>(request);
+            message.MerchantId = merchantId;
+
+            _publisher.Publish("payments.requested", , paymentId);
 
             return paymentId;
         }

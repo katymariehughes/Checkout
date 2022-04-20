@@ -10,7 +10,7 @@ namespace PaymentIngestionService.Infrastructure.EntityFramework
         public void Configure(EntityTypeBuilder<Payment> builder)
         {
             builder.HasKey(x => x.Id);
-
+            builder.Property(x => x.MerchantId).IsRequired();
             builder.OwnsOne(x => x.CardDetails, cd =>
             {
                 cd.Property(d => d.CardNumber).HasColumnName(nameof(CardDetails.CardNumber)).IsRequired();

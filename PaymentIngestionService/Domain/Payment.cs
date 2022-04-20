@@ -4,6 +4,8 @@
     {
         public Guid Id { get; set; }
 
+        public Guid MerchantId { get; set; }
+
         public CardDetails CardDetails { get; set; }
 
         public Amount Amount { get; set; }

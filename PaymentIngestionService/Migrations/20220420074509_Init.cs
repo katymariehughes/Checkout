@@ -9,7 +9,7 @@ namespace PaymentIngestionService.Migrations
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.CreateTable(
+             migrationBuilder.CreateTable(
                 name: "IdempotencyTokens",
                 columns: table => new
                 {
@@ -27,6 +27,7 @@ namespace PaymentIngestionService.Migrations
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    MerchantId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     CardNumber = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     ExpiryMonth = table.Column<int>(type: "int", nullable: false),
                     ExpiryYear = table.Column<int>(type: "int", nullable: false),

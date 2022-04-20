@@ -12,7 +12,7 @@ using PaymentIngestionService.Infrastructure.EntityFramework;
 namespace PaymentIngestionService.Migrations
 {
     [DbContext(typeof(IngestionContext))]
-    [Migration("20220419120316_Init")]
+    [Migration("20220420074509_Init")]
     partial class Init
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -52,6 +52,9 @@ namespace PaymentIngestionService.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("datetime2")
                         .HasDefaultValueSql("getutcdate()");
+
+                    b.Property<Guid>("MerchantId")
+                        .HasColumnType("uniqueidentifier");
 
                     b.HasKey("Id");
 

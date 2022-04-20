@@ -24,6 +24,8 @@ namespace Gateway.API.Infrastructure.Middleware
             if (merchantId == Guid.Empty)
                 throw new UnauthorizedException("Unauthorized client.");
 
+            context.Request.HttpContext.Items.Add("MerchantId", merchantId);
+
             await _next(context);
         }
     }
