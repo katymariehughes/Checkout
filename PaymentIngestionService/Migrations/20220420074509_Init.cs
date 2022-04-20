@@ -62,7 +62,7 @@ namespace PaymentIngestionService.Migrations
                 a.Issuer,
                 a.IssuerCountry,
                 p.CreatedOn as RequestedOn,
-                a.CreatedOn as ProcessOn
+                a.CreatedOn as ProcessedOn
                 FROM dbo.Payments p
                 JOIN dbo.Authorizations a
                 ON p.Id = a.PaymentId
