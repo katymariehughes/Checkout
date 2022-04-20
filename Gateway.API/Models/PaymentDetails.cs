@@ -18,5 +18,7 @@
         public string CardType { get; init; }
         public string Issuer { get; init; }
         public string IssuerCountry { get; init; }
+        public DateTime RequestedOn { get; init; }
+        public DateTime ProcessedOn { get; init; }
     }
 }

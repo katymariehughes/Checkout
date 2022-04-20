@@ -60,7 +60,9 @@ namespace PaymentIngestionService.Migrations
                 a.Bin,
                 a.CardType,
                 a.Issuer,
-                a.IssuerCountry
+                a.IssuerCountry,
+                p.CreatedOn as RequestedOn,
+                a.CreatedOn as ProcessOn
                 FROM dbo.Payments p
                 JOIN dbo.Authorizations a
                 ON p.Id = a.PaymentId
