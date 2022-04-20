@@ -16,9 +16,9 @@ namespace Gateway.API.Services
         private readonly ILogger<PaymentService> _logger;
         private readonly IMapper _mapper;
         private readonly ICapPublisher _publisher;
-        private readonly DapperContext _context;
+        private readonly IDapperContext _context;
 
-        public PaymentService(ILogger<PaymentService> logger, IDataProtectionProvider dataProtectionProvider, IMapper mapper, ICapPublisher publisher, DapperContext context)
+        public PaymentService(ILogger<PaymentService> logger, IDataProtectionProvider dataProtectionProvider, IMapper mapper, ICapPublisher publisher, IDapperContext context)
         {
             _dataProtector = dataProtectionProvider.CreateProtector("CardDetailsProtector");
             _logger = logger;
@@ -27,7 +27,7 @@ namespace Gateway.API.Services
             _context = context;
         }
 
-        public Guid InitiatePaymentFlow(PaymentRequest request, Guid merchantId)
+        public async Task<Guid> InitiatePaymentFlow(PaymentRequest request, Guid merchantId)
         {
             _logger.LogInformation("Initiating payment flow");
 
@@ -39,12 +39,12 @@ namespace Gateway.API.Services
             var message = _mapper.Map<PaymentRequestedEvent>(request);
             message.MerchantId = merchantId;
 
-            _publisher.Publish("payments.requested", message, paymentId);
+            await _publisher.PublishAsync("payments.requested", message, paymentId);
 
             return paymentId;
         }
 
-        public async Task<PaymentDetails> RetrievePaymentDetailsAsync(Guid id)
+        public async Task<PaymentDetails> RetrievePaymentDetails(Guid id)
         {
             using var connection = _context.CreateConnection();
             var result = await connection.QueryAsync<PaymentDetails>("sp_RetrievePaymentById", new { Id = id }, commandType: CommandType.StoredProcedure);

@@ -14,7 +14,7 @@ namespace PaymentIngestionService
         private const string ConsumingQueue = "payments.requested";
         private const string ProducingQueue = "payments.persisted";
 
-        public IngestionWorker(ILogger<IngestionWorker> logger, IServiceScopeFactory scopeFactory)
+        public IngestionWorker(IServiceScopeFactory scopeFactory)
         {
             _scopeFactory = scopeFactory ?? throw new ArgumentNullException(nameof(scopeFactory));
         }
@@ -25,7 +25,7 @@ namespace PaymentIngestionService
             var (messageId, correlationId) = header.GetIds();
 
             using var scope = _scopeFactory.CreateScope();
-            var context = scope.ServiceProvider.GetRequiredService<IngestionContext>();
+            var context = scope.ServiceProvider.GetRequiredService<IIngestionContext>();
 
             if (await context.HasBeenProcessed(messageId, nameof(IngestionWorker)))
                 return;
@@ -42,7 +42,7 @@ namespace PaymentIngestionService
                 await context.SaveChangesAsync();
                 await context.PersistIdemptencyToken(messageId, nameof(IngestionWorker));
 
-                capPublisher.Publish(ProducingQueue, mapper.Map<PaymentPersistedEvent>(entity), correlationId);
+                await capPublisher.PublishAsync(ProducingQueue, mapper.Map<PaymentPersistedEvent>(entity), correlationId);
 
                 await txn.CommitAsync();
             }

@@ -16,7 +16,7 @@ hostBuilder.ConfigureServices((context, services) =>
     services.AddTransient<CapFilter>();
     services.AddTransient<IngestionWorker>();
     services.AddAutoMapper(Assembly.GetAssembly(typeof(MappingProfile)));
-    services.AddDbContext<IngestionContext>(opt => opt.UseSqlServer(config.GetConnectionString("Database")));
+    services.AddDbContext<IIngestionContext, IngestionContext>(opt => opt.UseSqlServer(config.GetConnectionString("Database")));
     services.AddCap(x =>
     {
         x.DefaultGroupName = "paymentingestionservice";

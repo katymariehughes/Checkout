@@ -24,11 +24,12 @@ namespace Gateway.API.Controllers
         [SwaggerRequestExample(typeof(PaymentRequest), typeof(PaymentRequestExample))]
         [ProducesResponseType(typeof(PaymentResponse), (int)HttpStatusCode.Created)]
         [ProducesResponseType(typeof(ValidationProblemDetails), (int)HttpStatusCode.BadRequest)]
-        public IActionResult ProcessPayment(PaymentRequest request)
+        public async Task<IActionResult> ProcessPayment(PaymentRequest request)
         {
-            Request.HttpContext.Items.TryGetValue("MerchantId", out var merchantIdValue);
+            if (Request.HttpContext.Items?.TryGetValue("MerchantId", out var merchantIdValue) != true)
+                return BadRequest(new { Message = "No merchant ID could be found" });
 
-            var paymentId = _paymentsService.InitiatePaymentFlow(request, Guid.Parse(merchantIdValue.ToString()));
+            var paymentId = await _paymentsService.InitiatePaymentFlow(request, Guid.Parse(merchantIdValue.ToString()));
 
             return CreatedAtAction(nameof(RetrievePaymentDetails), new { id = paymentId }, new PaymentResponse
             {
@@ -43,7 +44,7 @@ namespace Gateway.API.Controllers
         [ProducesResponseType(typeof(ValidationProblemDetails), (int)HttpStatusCode.BadRequest)]
         public async Task<IActionResult> RetrievePaymentDetails(Guid id)
         {
-            var paymentDetails = await _paymentsService.RetrievePaymentDetailsAsync(id);
+            var paymentDetails = await _paymentsService.RetrievePaymentDetails(id);
 
             if (paymentDetails is null)
                 return NotFound();

@@ -14,7 +14,7 @@ namespace Gateway.API.Infrastructure.Extensions
     {
         public static void RegisterTypes(this IServiceCollection services, IConfiguration config)
         {
-            services.AddSingleton<DapperContext>();
+            services.AddSingleton<IDapperContext, DapperContext>();
             services.AddSingleton<IDateTimeOracle, DateTimeOracle>();
             services.AddScoped<IPaymentService, PaymentService>();
             services.AddScoped<CapFilter>();

@@ -5,7 +5,7 @@ using System.Reflection;
 
 namespace PaymentIngestionService.Infrastructure.EntityFramework
 {
-    public class IngestionContext : DbContext
+    public class IngestionContext : DbContext, IIngestionContext
     {
         public IngestionContext(DbContextOptions<IngestionContext> options) : base(options) { }
 

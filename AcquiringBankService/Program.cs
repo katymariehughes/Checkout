@@ -19,7 +19,7 @@ hostBuilder.ConfigureServices((context, services) =>
     services.AddScoped<CapFilter>();
     services.AddAutoMapper(Assembly.GetAssembly(typeof(MappingProfile)));
     services.AddDataProtection();
-    services.AddDbContext<AcquiringContext>(opt => opt.UseSqlServer(config.GetConnectionString("Database")));
+    services.AddDbContext<IAcquiringContext, AcquiringContext>(opt => opt.UseSqlServer(config.GetConnectionString("Database")));
     services.AddScoped<IAcquiringService, AcquiringService>();
     FlurlHttp.Configure(settings => settings.HttpClientFactory = new PollyHttpClientFactory());
 

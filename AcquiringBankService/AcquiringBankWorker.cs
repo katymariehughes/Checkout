@@ -14,7 +14,7 @@ namespace AcquiringBankService
         private const string ConsumingQueue = "payments.persisted";
         private const string ProducingQueue = "payments.acquired";
 
-        public AcquiringBankWorker(ILogger<AcquiringBankWorker> logger, IServiceScopeFactory scopeFactory)
+        public AcquiringBankWorker(IServiceScopeFactory scopeFactory)
         {
             _scopeFactory = scopeFactory ?? throw new ArgumentNullException(nameof(scopeFactory));
         }
@@ -25,7 +25,7 @@ namespace AcquiringBankService
             var (messageId, correlationId) = header.GetIds();
 
             using var scope = _scopeFactory.CreateScope();
-            var context = scope.ServiceProvider.GetRequiredService<AcquiringContext>();
+            var context = scope.ServiceProvider.GetRequiredService<IAcquiringContext>();
 
             if (await context.HasBeenProcessed(messageId, nameof(AcquiringBankWorker)))
                 return;
@@ -40,7 +40,7 @@ namespace AcquiringBankService
             {
                 await context.PersistIdemptencyToken(messageId, nameof(AcquiringBankWorker));
 
-                capPublisher.Publish(ProducingQueue, mapper.Map<AcquirerResponseEvent>(response), correlationId);
+                await capPublisher.PublishAsync(ProducingQueue, mapper.Map<AcquirerResponseEvent>(response), correlationId);
 
                 await txn.CommitAsync();
             }

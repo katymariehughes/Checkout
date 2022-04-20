@@ -4,8 +4,8 @@ namespace Gateway.API.Services
 {
     public interface IPaymentService
     {
-        Guid InitiatePaymentFlow(PaymentRequest request, Guid merchantId);
+        Task<Guid> InitiatePaymentFlow(PaymentRequest request, Guid merchantId);
 
-        Task<PaymentDetails> RetrievePaymentDetailsAsync(Guid id);
+        Task<PaymentDetails> RetrievePaymentDetails(Guid id);
     }
 }

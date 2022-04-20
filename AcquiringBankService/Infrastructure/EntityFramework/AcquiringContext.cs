@@ -4,7 +4,7 @@ using System.Reflection;
 
 namespace AcquiringBankService.Infrastructure.EntityFramework
 {
-    public class AcquiringContext : DbContext
+    public class AcquiringContext : DbContext, IAcquiringContext
     {
         public AcquiringContext(DbContextOptions<AcquiringContext> options) : base(options) { }
 

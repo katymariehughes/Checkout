@@ -3,7 +3,7 @@ using System.Data;
 
 namespace Gateway.API.Infrastructure.Dapper
 {
-    public class DapperContext
+    public class DapperContext : IDapperContext
     {
         private readonly IConfiguration _configuration;
         private readonly string _connectionString;

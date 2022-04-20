@@ -4,9 +4,9 @@ namespace Common.Events
 {
     public static class CapExtensions
     {
-        public static void Publish<T>(this ICapPublisher capPublisher, string name, T contentObj, Guid correlationId)
+        public static async Task PublishAsync<T>(this ICapPublisher capPublisher, string name, T contentObj, Guid correlationId)
         {
-            capPublisher.Publish(name, contentObj, new Dictionary<string, string> {
+            await capPublisher.PublishAsync(name, contentObj, new Dictionary<string, string> {
                 { "correlation-id", correlationId.ToString() },
                 { "message-id", Guid.NewGuid().ToString() }
             });

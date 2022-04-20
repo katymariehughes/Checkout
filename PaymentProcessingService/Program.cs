@@ -15,7 +15,7 @@ hostBuilder.ConfigureServices((context, services) =>
     services.AddTransient<CapFilter>();
     services.AddTransient<ProcessingWorker>();
     services.AddAutoMapper(Assembly.GetAssembly(typeof(MappingProfile)));
-    services.AddDbContext<ProcessorContext>(opt => opt.UseSqlServer(config.GetConnectionString("Database")));
+    services.AddDbContext<IProcessorContext, ProcessorContext>(opt => opt.UseSqlServer(config.GetConnectionString("Database")));
     services.AddCap(x =>
     {
         x.DefaultGroupName = "paymentprocessingservice";

@@ -14,7 +14,7 @@ namespace PaymentProcessingService
         private const string ConsumingQueue = "payments.acquired";
         private const string ProducingQueue = "payments.processed";
 
-        public ProcessingWorker(ILogger<ProcessingWorker> logger, IServiceScopeFactory scopeFactory)
+        public ProcessingWorker(IServiceScopeFactory scopeFactory)
         {
             _scopeFactory = scopeFactory ?? throw new ArgumentNullException(nameof(scopeFactory));
         }
@@ -25,7 +25,7 @@ namespace PaymentProcessingService
             var (messageId, correlationId) = header.GetIds();
 
             using var scope = _scopeFactory.CreateScope();
-            var context = scope.ServiceProvider.GetRequiredService<ProcessorContext>();
+            var context = scope.ServiceProvider.GetRequiredService<IProcessorContext>();
 
             if (await context.HasBeenProcessed(messageId, nameof(ProcessingWorker)))
                 return;
@@ -43,7 +43,7 @@ namespace PaymentProcessingService
                 await context.SaveChangesAsync();
                 await context.PersistIdemptencyToken(messageId, nameof(ProcessingWorker));
 
-                capPublisher.Publish(ProducingQueue, new PaymentProcessedEvent { IsApproved = acquirerResponse.Approved }, correlationId);
+                await capPublisher.PublishAsync(ProducingQueue, new PaymentProcessedEvent { IsApproved = acquirerResponse.Approved }, correlationId);
 
                 await txn.CommitAsync();
             }

@@ -5,7 +5,7 @@ using System.Reflection;
 
 namespace PaymentProcessingService.Infrastructure.EntityFramework
 {
-    public class ProcessorContext : DbContext
+    public class ProcessorContext : DbContext, IProcessorContext
     {
         public ProcessorContext(DbContextOptions<ProcessorContext> options) : base(options) { }
 
