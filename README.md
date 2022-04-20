@@ -22,7 +22,7 @@ Ctrl + F5 to run all the services
 
 [Seq logging](http://localhost:5341)
 
-[RabbitMQ admin console](http://localhost:15672)
+[RabbitMQ admin console](http://localhost:15672) - user:guest pass:guest
 
 [BankSimulator.API Swagger UI](https://localhost:7209/swagger/index.html)
 
