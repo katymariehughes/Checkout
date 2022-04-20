@@ -175,6 +175,38 @@ Response
   "status": "Processing"
 }
 ```
+
+GET Request
+```bash
+curl -X 'GET' \
+  'https://localhost:7099/api/v1/payments/16769f4c-a730-4f05-b8ec-0f45c22375b0' \
+  -H 'accept: text/plain' \
+  -H 'X-API-KEY: pgH7QzFHJx4w46fI5Uzi4RvtTwlEXp'
+```
+
+Response
+
+```json
+{
+  "paymentId": "16769f4c-a730-4f05-b8ec-0f45c22375b0",
+  "currency": "GBP",
+  "amount": 100,
+  "approved": false,
+  "status": "Pending",
+  "responseCode": "3542",
+  "responseSummary": "Authorized",
+  "type": "Card",
+  "scheme": "Visa",
+  "expiryMonth": 4,
+  "expiryYear": 2025,
+  "last4": "5100",
+  "bin": "424242",
+  "cardType": "Credit",
+  "issuer": "Starling",
+  "issuerCountry": "US"
+}
+```
+
 ---
 
 Bank Simulator API
