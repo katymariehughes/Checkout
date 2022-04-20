@@ -39,7 +39,7 @@ namespace Gateway.API.Services
             var message = _mapper.Map<PaymentRequestedEvent>(request);
             message.MerchantId = merchantId;
 
-            _publisher.Publish("payments.requested", , paymentId);
+            _publisher.Publish("payments.requested", message, paymentId);
 
             return paymentId;
         }
