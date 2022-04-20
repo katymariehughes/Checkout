@@ -203,7 +203,8 @@ Response
   "bin": "424242",
   "cardType": "Credit",
   "issuer": "Starling",
-  "issuerCountry": "US"
+  "issuerCountry": "US",
+  "processedOn": "2022-04-20T07:57:46.18"
 }
 ```
 
